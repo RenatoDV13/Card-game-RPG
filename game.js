@@ -132,7 +132,7 @@ let totalPlayerCriticalAttacks = 0;
 let damageTakenLastBossFight = 0; // Dano tomado no último boss
 let cardsUsedThisRun = [];
 let certificates = []; // Array para armazenar os certificados ganhos
-const MAX_CERTIFICATE_SLOTS = 5; // Máximo de slots para certificados (AUMENTADO)
+const MAX_CERTIFICATE_SLOTS = 3; // Máximo de slots para certificados (AUMENTADO)
 
 
 // 🃏 CARTAS DISPONÍVEIS //
