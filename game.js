@@ -3,24 +3,24 @@
 // 📋 SFX do jogo //
 const sfx = {
     // Carrega arquivos de áudio para efeitos sonoros
-    click: new Audio("sounds/click1.wav"), // Geral para cliques de cartas (pode ser usado em outras interações)
-    hit: new Audio("sounds/hitHurt1.wav"), // Som de acerto normal em inimigo (quando jogador ataca)
-    heal: new Audio("sounds/powerUp1.wav"), // Som de cura/power-up (para Regeneração)
-    restorationHP: new Audio("sounds/RestourationHP.wav"), // Efeito sonoro para recuperação de vida (para Vida +35)
-    enemyHit: new Audio("sounds/hitHurtEnemy.wav"), // Som de inimigo acertando o jogador (normal)
-    powerUp2: new Audio("sounds/powerUp2.wav"), // SFX para Surtar/Varinha de Mágico
-    hitCriticalPlayer: new Audio("sounds/hitHurtCriticalPlayer.wav"), // SFX para crítico no jogador (inimigo ataca criticamente)
-    hitCriticalEnemy: new Audio("sounds/hitHurtEnemy.wav"), // SFX para crítico no inimigo (jogador ataca criticamente)
-    click2: new Audio("sounds/click2.wav"), // Novo SFX para botões de menu
-    blipSelectbutton1: new Audio("sounds/blipSelectbutton1.wav"), // Novo SFX para botões de voltar/cancelar
-    victoryTheme: new Audio("sounds/VictoryTheme1.mp3"), // Música de vitória
+    click: new Audio("click1.wav"), // Geral para cliques de cartas (pode ser usado em outras interações)
+    hit: new Audio("hitHurt1.wav"), // Som de acerto normal em inimigo (quando jogador ataca)
+    heal: new Audio("powerUp1.wav"), // Som de cura/power-up (para Regeneração)
+    restorationHP: new Audio("RestourationHP.wav"), // Efeito sonoro para recuperação de vida (para Vida +35)
+    enemyHit: new Audio("hitHurtEnemy.wav"), // Som de inimigo acertando o jogador (normal)
+    powerUp2: new Audio("powerUp2.wav"), // SFX para Surtar/Varinha de Mágico
+    hitCriticalPlayer: new Audio("hitHurtCriticalPlayer.wav"), // SFX para crítico no jogador (inimigo ataca criticamente)
+    hitCriticalEnemy: new Audio("hitHurtEnemy.wav"), // SFX para crítico no inimigo (jogador ataca criticamente)
+    click2: new Audio("click2.wav"), // Novo SFX para botões de menu
+    blipSelectbutton1: new Audio("blipSelectbutton1.wav"), // Novo SFX para botões de voltar/cancelar
+    victoryTheme: new Audio("VictoryTheme1.mp3"), // Música de vitória
 
-    bossTheme: new Audio("sounds/BossTheme1.mp3"), // Música dos Bosses
-    surtarHit: new Audio("sounds/HitcriticalSurtar.wav"), // Dano com Surtar ativado
-    iceActive: new Audio("sounds/IceActive1.wav"), // Ativar Ar Congelante
-    shieldActive: new Audio("sounds/ShieldActive1.wav"), // Ativar Defesa
-    armorSpikeActive: new Audio("sounds/ActiveArmorSpike.wav"), // Ativar Armadura de Espinhos
-    ultraSeriousPunch: new Audio("sounds/UltraSeriousPunch.wav") // SFX: Soco Ultramente Sério
+    bossTheme: new Audio("BossTheme1.mp3"), // Música dos Bosses
+    surtarHit: new Audio("HitcriticalSurtar.wav"), // Dano com Surtar ativado
+    iceActive: new Audio("IceActive1.wav"), // Ativar Ar Congelante
+    shieldActive: new Audio("ShieldActive1.wav"), // Ativar Defesa
+    armorSpikeActive: new Audio("ActiveArmorSpike.wav"), // Ativar Armadura de Espinhos
+    ultraSeriousPunch: new Audio("UltraSeriousPunch.wav") // SFX: Soco Ultramente Sério
 };
 
 // Variável para a música de fundo
@@ -144,11 +144,11 @@ const cards = [
     { id: 7, nameKey: "card_facacozinha_name", cost: 20, type: "attack", manaCost: 0, unlocked: false, critChance: 0.45, critMultiplier: 1.6, action: function() { dealDamage(8, this); }, descriptionKey: "card_facacozinha_desc" },
 
     // Cartas de Magia
-    { id: 3, nameKey: "card_vida15_name", cost: 30, type: "magic", manaCost: 60, unlocked: false, critChance: 0, critMultiplier: 0, action: function() { heal(35); sfx.restorationHP.play(); }, descriptionKey: "card_vida15_desc" },
+    { id: 3, nameKey: "card_vida15_name", cost: 25, type: "magic", manaCost: 60, unlocked: false, critChance: 0, critMultiplier: 0, action: function() { heal(35); sfx.restorationHP.play(); }, descriptionKey: "card_vida15_desc" },
     {
         id: 5,
         nameKey: "card_regen_name",
-        cost: 50,
+        cost: 30,
         type: "magic",
         manaCost: 65, // CORRIGIDO: Custo de mana da Regeneração para 65
         unlocked: false,
