@@ -258,14 +258,14 @@ const normalEnemyTypes = [
 
 // Definição dos tipos de ataque dos inimigos com chance de crítico
 const enemyAttackTypes = [
-    { nameKey: "attack_normal_name", minDamage: 5, maxDamage: 10, critChance: 0.05, critMultiplier: 1.5 },
-    { nameKey: "attack_semi_special_name", minDamage: 7, maxDamage: 13, critChance: 0.10, critMultiplier: 1.7 },
-    { nameKey: "attack_special_name", minDamage: 9, maxDamage: 18, critChance: 0.20, critMultiplier: 2.0 }
+    { nameKey: "attack_normal_name", minDamage: 2, maxDamage: 5, critChance: 0.05, critMultiplier: 1.5 },
+    { nameKey: "attack_semi_special_name", minDamage: 5, maxDamage: 10, critChance: 0.10, critMultiplier: 1.7 },
+    { nameKey: "attack_special_name", minDamage: 10, maxDamage: 15, critChance: 0.20, critMultiplier: 2.0 }
 ];
 
 // 👑 BOSSES E SEUS ATAQUES ESPECIAIS //
 const MAX_WAVE = 30; // Limite de ondas no jogo inteiro
-const BOSS_HEALTH = 355; // Vida fixa para todos os chefes
+const BOSS_HEALTH = 200; // Vida fixa para todos os chefes
 
 const bossAttackLogic = {
     "🥷": function() { // Ninja: ataque rápido com alta chance de crítico
