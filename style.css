@@ -1,0 +1,858 @@
+/* 🎨 style.css - Estilos globais e de componentes para Emotion RPG */
+
+/* Importa a fonte personalizada para o jogo */
+@font-face {
+  font-family: 'PixelifySans';
+  src: url('fontes/PixelifySans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'PixelifySans';
+  src: url('fontes/PixelifySans-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Reset básico e configurações de corpo */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%; /* Garante que HTML e BODY ocupem 100% da viewport */
+  overflow: hidden; /* Evita barras de rolagem indesejadas */
+}
+
+body {
+  background: #111; /* Cor de fundo escura */
+  color: white; /* Cor do texto padrão */
+  font-family: 'PixelifySans', sans-serif; /* Fonte padrão do jogo */
+  transition: background-color 0.1s ease-in-out; /* Transição para efeitos de flash de tela */
+  line-height: 1.5; /* Melhora a legibilidade do texto */
+}
+
+/* NOVO: Container principal que engloba todas as telas do jogo */
+#app-container {
+  position: relative; /* Essencial para posicionar as telas absolutamente dentro dele */
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Garante que nada saia dos limites do container */
+}
+
+/* Estilo base para todas as telas do jogo */
+.screen {
+  display: none; /* ESSE É O PONTO CRÍTICO: Todas as telas são ocultadas por padrão */
+  position: absolute; /* Permite que as telas se sobreponham, controladas por display */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box; /* Inclui padding na largura/altura total */
+  flex-direction: column; /* Padrão para empilhar conteúdo verticalmente */
+  align-items: center; /* Centraliza horizontalmente o conteúdo da tela */
+  justify-content: flex-start; /* Alinha no topo verticalmente o conteúdo da tela */
+  background-color: #111; /* Fundo escuro para todas as telas */
+  z-index: 10; /* Garante que as telas ativas estejam acima do fundo do body */
+}
+
+/* Classe para mostrar a tela ativa (adicionada/removida via JS) */
+.screen.active {
+  display: flex; /* APENAS A TELA COM ESTA CLASSE SERÁ EXIBIDA */
+  z-index: 20; /* Garante que a tela ativa esteja acima das outras telas ocultas */
+}
+
+/* Classe genérica para esconder elementos (usada por JS) */
+.hidden-element {
+    display: none !important; /* Força a ocultação */
+}
+
+/* Títulos e subtítulos nas telas */
+.screen h1, .screen h2, .screen h3 {
+  margin: 20px 0;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  color: #fff; /* Cor padrão para títulos */
+}
+
+#main-menu h1 {
+    color: #f1c40f; /* Título principal em dourado */
+    font-size: 3em;
+    text-shadow: 0 0 15px rgba(241, 196, 15, 0.7);
+    margin-bottom: 40px;
+}
+
+/* Estilo para todos os botões */
+button {
+  padding: 12px 25px;
+  font-size: 1.1em;
+  font-family: 'PixelifySans', sans-serif;
+  margin: 8px;
+  cursor: pointer;
+  background-color: #3f51b5;
+  color: white;
+  border: 2px solid #5c6bc0;
+  border-radius: 8px;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+button:hover {
+  background-color: #5c6bc0;
+  border-color: #7986cb;
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+button:disabled {
+    background-color: #2e3b8a;
+    color: #aeb8ec;
+    cursor: not-allowed;
+    border-color: #3b4c9b;
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Estilo para botões de carta desabilitados */
+.card-button-disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    filter: grayscale(100%);
+}
+
+/* Botão de voltar (genérico para todas as telas) */
+.btn-back {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 40;
+  background-color: #c0392b;
+  border-color: #e74c3c;
+}
+
+.btn-back:hover {
+  background-color: #e74c3c;
+  border-color: #f5b7b1;
+}
+
+/* ------------------- ESTILOS DA TELA DO JOGO ------------------- */
+
+#game-screen {
+    display: flex; /* Transforma a tela de jogo em um container flexível */
+    flex-direction: column; /* Empilha os filhos verticalmente */
+    justify-content: space-between; /* Empurra o inimigo para cima e a HUD do jogador para baixo */
+    height: 100%; /* Ocupa 100% da altura do seu pai (.screen) */
+    width: 100%;
+    padding: 10px; /* Padding geral para a tela do jogo */
+    box-sizing: border-box;
+    position: relative; /* Para z-index e posicionamento de elementos filhos (como o botão voltar) */
+}
+
+/* Player UI (container principal para informações e cartas do jogador) */
+#player-ui {
+    display: flex;
+    flex-direction: column; /* Empilha as informações do jogador e a mão de cartas */
+    align-items: center; /* Centraliza horizontalmente o conteúdo da HUD */
+    width: 100%; /* Ocupa a largura total da tela do jogo */
+    padding: 10px 0; /* Padding superior/inferior */
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.7); /* Fundo semi-transparente */
+    border-top: 2px solid #5c6bc0; /* Borda superior */
+    z-index: 30; /* Garante que fique acima de outros elementos do jogo */
+    font-family: 'PixelifySans', sans-serif;
+    transition: background-color 0.1s ease-in-out; /* Transição para o flash */
+    flex-shrink: 0; /* Impede que encolha */
+}
+
+/* Nova classe para HUD do jogador quando toma dano */
+#player-ui.flash-red-hud {
+    background-color: #c0392b; /* Vermelho para dano */
+}
+
+/* Container para as informações de vida, mana, cubos, onda */
+#player-info {
+    display: flex;
+    justify-content: space-between;
+    width: 95%; /* Ocupa a maior parte da largura do #player-ui */
+    padding: 0 10px; /* Padding interno horizontal */
+    margin-bottom: 10px; /* Espaço entre as informações e as cartas */
+}
+
+.player-stats-left, .player-stats-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinha texto à esquerda no grupo esquerdo */
+    gap: 5px;
+}
+
+.player-stats-right {
+    align-items: flex-end; /* Alinha texto à direita no grupo direito */
+}
+
+#player-info span {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+/* Barras de HP para inimigo e jogador */
+.hp-bar-container { /* Container para a barra de HP do jogador (dentro de player-info) */
+    width: 150px;
+    height: 20px;
+    background: #c0392b; /* Fundo vermelho da barra vazia */
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+#enemy-health-bar { /* Barra de vida do inimigo */
+    width: 200px;
+    height: 20px;
+    background: #c0392b; /* Fundo vermelho da barra vazia */
+    margin: 10px auto;
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* AQUI ESTÁ A CORREÇÃO CRÍTICA PARA A BARRA DE VIDA DO INIMIGO */
+#enemy-health { /* Este é o preenchimento da barra de vida do inimigo */
+    height: 100%;
+    background: #27ae60; /* CORRIGIDO: Agora o preenchimento será verde */
+    width: 100%; /* Este width será manipulado pelo JavaScript */
+    transition: width 0.3s ease-out;
+    border-radius: 5px;
+}
+
+.hp-text { /* Texto de HP dentro da barra */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 0.9em;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* Área do inimigo (ocupa o espaço restante entre o topo e a HUD do jogador) */
+#enemy-area {
+  margin-top: 5vh; /* Pequena margem do topo da tela de jogo */
+  text-align: center;
+  position: relative; /* Para partículas e indicador de boss */
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Alinha o inimigo para cima dentro da sua área */
+  flex-grow: 1; /* Permite que ocupe o máximo de espaço vertical disponível */
+  padding-bottom: 20px; /* Espaçamento entre o inimigo e a HUD do jogador */
+}
+
+/* Texto "Boss" que aparece em cima do chefe */
+#boss-indicator {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #f1c40f; /* Cor dourada para destacar */
+    text-shadow: 0 0 10px rgba(241, 196, 15, 0.7);
+    margin-bottom: 10px;
+    animation: pulse 1.5s infinite alternate; /* Animação de pulsação */
+}
+
+@keyframes pulse {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+/* Ícone do inimigo */
+#enemy {
+  font-size: 120px; /* Ícone maior para inimigo/boss */
+  transition: transform 0.2s ease-out;
+  position: relative;
+  z-index: 2;
+}
+
+/* Nome do inimigo (oculto) */
+#enemy-name-display {
+    display: none;
+}
+
+/* Container para as cartas do jogador (dentro de #player-ui) */
+#card-hand {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px;
+  width: 95%; /* Ocupa a largura total da HUD do jogador */
+  box-sizing: border-box;
+  z-index: 30;
+}
+
+/* Estilo para cada carta individual */
+.card {
+  background: #1e1e1e;
+  border: 3px solid white;
+  padding: 10px;
+  border-radius: 10px;
+  width: 110px;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+  font-family: 'PixelifySans', sans-serif;
+}
+
+.card:hover {
+  background: #333;
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 4px 44px 12px rgba(0,0,0,0.7); /* Aumentei o y do shadow para dar mais profundidade ao levantar */
+}
+
+/* Estilo para o nome da carta */
+.card .card-name {
+    font-size: 15px;
+    line-height: 1.2;
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+/* Estilo para o custo de mana da carta */
+.card .mana-cost-display {
+    font-size: 13px;
+    color: #90ee90;
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+/* Estilos de borda por tipo de carta */
+.card.type-attack {
+    border-color: #f39c12; /* Laranja */
+}
+.card.type-magic {
+    border-color: #3498db; /* Azul */
+}
+.card.type-support {
+    border-color: #2ecc71; /* Verde */
+}
+.card.type-special { /* NOVA CATEGORIA: Categoria "especiais" com contorno roxo */
+    border-color: #8e44ad; /* Roxo */
+}
+
+/* Estilo para cartas selecionadas no deck */
+.card.selected-card {
+    opacity: 0.7;
+    transform: scale(0.95);
+    box-shadow: inset 0 0 10px rgba(255,255,255,0.3);
+}
+
+/* Mensagens do jogo (substitui alert) */
+.game-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid white;
+    z-index: 9999;
+    font-size: 24px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    font-weight: bold;
+    font-family: 'PixelifySans', sans-serif;
+}
+
+/* ------------------- ESTILOS DA LOJA E DECK ------------------- */
+.scroll-area { /* Usado para shop-items e deck-cards */
+  max-height: 65vh;
+  overflow-y: auto;
+  border: 3px solid #f1c40f;
+  padding: 15px;
+  width: 90%;
+  max-width: 700px;
+  box-sizing: border-box;
+  background: rgba(10, 10, 10, 0.9);
+  border-radius: 12px;
+  box-shadow: inset 0 0 15px rgba(241, 196, 15, 0.3);
+  display: flex; /* Para organizar cards em linha */
+  flex-wrap: wrap; /* Permite quebra de linha */
+  justify-content: center; /* Centraliza cards */
+  gap: 15px; /* Espaçamento entre cards */
+}
+
+/* Estilo da barra de rolagem para navegadores WebKit */
+.scroll-area::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scroll-area::-webkit-scrollbar-track {
+  background: #2c3e50;
+  border-radius: 5px;
+}
+
+.scroll-area::-webkit-scrollbar-thumb {
+  background-color: #f1c40f;
+  border-radius: 5px;
+  border: 1px solid #e67e22;
+}
+
+.scroll-area .card { /* Estilo específico para cards na lista (loja/deck) */
+    width: 120px; /* Maior para loja/deck */
+    min-height: 100px;
+    flex-shrink: 0; /* Não permite encolher */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.scroll-area .card .card-name {
+    margin-bottom: 5px;
+}
+
+.scroll-area .card .mana-cost-display {
+    margin-top: 0; /* Remove margem superior se já houver mana-cost-display */
+    margin-bottom: 5px;
+}
+
+.scroll-area .card button {
+    width: 90%; /* Botões menores dentro da carta */
+    padding: 5px 10px;
+    font-size: 0.9em;
+    margin: 3px auto;
+}
+
+/* Estilo para a mensagem de aviso no deck */
+.deck-warning-message {
+    color: #e74c3c; /* Vermelho para avisos */
+    font-size: 1.1em;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    margin-top: 15px;
+    text-align: center;
+    max-width: 80%;
+}
+
+/* ------------------- ESTILOS DA TELA DE HISTÓRIA ------------------- */
+#story-screen {
+    background-color: #111; /* Fundo escuro para a história */
+    justify-content: flex-start; /* Alinha o conteúdo da história no topo */
+}
+
+#story-screen .btn-back { /* Botão de voltar da história */
+    background-color: #6a1b9a; /* Cor roxa */
+    border-color: #8e24aa;
+}
+#story-screen .btn-back:hover {
+    background-color: #8e44ad;
+    border-color: #ab47bc;
+}
+
+
+#story-screen h2 {
+    color: #f1c40f;
+    text-shadow: 2px 2px 5px rgba(241, 196, 15, 0.5);
+    font-size: 2.5em;
+    margin-top: 50px;
+}
+
+.story-content-box { /* Reusa estilos básicos de .scroll-area */
+    height: 70vh; /* Altura ajustada para caber mais texto */
+    font-size: 1.2em;
+    line-height: 1.8; /* Espaçamento de linha para leitura confortável */
+    text-align: center; /* Centraliza o texto dentro da caixa */
+    color: #e0e0e0; /* Cor do texto da história */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    display: flex; /* Usar flexbox para centralizar conteúdo verticalmente */
+    flex-direction: column;
+    justify-content: flex-start; /* Alinha no topo do conteúdo da história */
+    align-items: center; /* Centraliza horizontalmente o texto na caixa */
+    margin-top: 20px;
+}
+
+.story-text-line {
+    opacity: 0;
+    transition: opacity 1s ease-in; /* Transição para o texto aparecer suavemente */
+    margin: 5px 0; /* Espaçamento entre as linhas da história */
+    font-family: 'PixelifySans', sans-serif;
+    max-width: 90%;
+}
+
+.story-text-line.visible {
+    opacity: 1;
+}
+
+/* Botão de história no menu principal */
+.story-button-main-menu {
+    background-color: #6a1b9a; /* Cor roxa para o botão da história */
+    border-color: #8e24aa;
+    margin-top: 30px; /* Adiciona um espaço abaixo dos certificados */
+}
+
+.story-button-main-menu:hover {
+    background-color: #8e44ad;
+    border-color: #ab47bc;
+}
+
+/* ------------------- ESTILOS DO DIÁLOGO DE CONFIRMAÇÃO CUSTOMIZADO ------------------- */
+.custom-confirm-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro semi-transparente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000; /* Acima de tudo */
+    backdrop-filter: blur(5px); /* Efeito de desfoque */
+}
+
+.custom-confirm-content {
+    background-color: #222;
+    padding: 30px;
+    border-radius: 15px;
+    border: 3px solid #f1c40f; /* Borda dourada */
+    box-shadow: 0 0 20px rgba(241, 196, 15, 0.5);
+    text-align: center;
+    max-width: 80%;
+    font-size: 1.3em;
+    font-family: 'PixelifySans', sans-serif;
+}
+
+.custom-confirm-content p {
+    margin-bottom: 25px;
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+.custom-confirm-buttons button {
+    font-size: 1.1em;
+    margin: 0 10px;
+    padding: 10px 25px;
+}
+
+.custom-confirm-buttons button#custom-confirm-yes {
+    background-color: #27ae60; /* Verde para Sim */
+    border-color: #2ecc71;
+}
+.custom-confirm-buttons button#custom-confirm-yes:hover {
+    background-color: #2ecc71;
+    border-color: #58d68d;
+}
+
+.custom-confirm-buttons button#custom-confirm-no {
+    background-color: #c0392b; /* Vermelho para Não */
+    border-color: #e74c3c;
+}
+.custom-confirm-buttons button#custom-confirm-no:hover {
+    background-color: #e74c3c;
+    border-color: #f5b7b1;
+}
+
+/* ------------------- ESTILOS DE PARTÍCULAS E CERTIFICADOS ------------------- */
+/* Estilo das partículas que flutuam ao causar dano/cura */
+.particle {
+    position: absolute;
+    font-size: 2.5em;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 100;
+    white-space: nowrap;
+    font-weight: bold;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+    animation: fade-out-up 1.5s forwards;
+    font-family: 'PixelifySans', sans-serif;
+}
+
+/* Animação para partículas: subir e desaparecer */
+@keyframes fade-out-up {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.8);
+    }
+}
+
+/* Estilos para os slots de certificados (agora são imagens) */
+#certificates-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 30px;
+    width: 90%;
+    max-width: 450px; /* Um pouco maior para caber 5 imagens */
+    flex-wrap: wrap;
+    margin-bottom: 20px; /* Espaço antes do novo botão de história */
+}
+
+.certificate-slot {
+    width: 60px; /* Tamanho fixo para o ícone do certificado */
+    height: 60px;
+    border: 3px solid #7f8c8d;
+    border-radius: 10px;
+    background-color: rgba(20, 20, 20, 0.7);
+    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+    object-fit: contain; /* Garante que a imagem se ajuste */
+    padding: 5px; /* Pequeno padding para a imagem */
+}
+
+.certificate-slot:hover {
+    background-color: rgba(30, 30, 30, 0.9);
+    border-color: #95a5a6;
+    transform: translateY(-3px);
+}
+
+.certificate-slot.empty-slot { /* Nova classe para slots vazios */
+    border-style: dashed;
+    opacity: 0.6;
+    background-color: rgba(20, 20, 20, 0.3);
+}
+
+/* Estilo da tela de vitória */
+#victory-screen {
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 100;
+}
+
+#victory-screen h1 {
+    font-size: 3.5em;
+    color: #f1c40f;
+    text-shadow: 3px 3px 8px rgba(255, 215, 0, 0.7);
+    margin-bottom: 30px;
+}
+
+#victory-screen p {
+    font-size: 1.3em;
+    margin: 15px 0;
+    color: #e0e0e0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    font-family: 'PixelifySans', sans-serif;
+}
+
+#victory-certificate-display {
+    width: 100px; /* Tamanho maior para o certificado de vitória */
+    height: 100px;
+    margin: 20px auto;
+}
+
+/* Cenário de fundo em ASCII art vertical */
+#ascii-background {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Garante que fique no fundo */
+  color: #6699CC;
+  font-family: 'monospace', monospace;
+  font-size: 10px;
+  line-height: 1;
+  overflow: hidden;
+  white-space: pre; /* Preserva espaços e quebras de linha */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-shadow: 0 0 5px rgba(102, 153, 204, 0.5);
+}
+
+/* NOVO: Estilos para o overlay de mensagem pós-vitória */
+.post-victory-overlay {
+    background-color: #000; /* Fundo preto sólido */
+    color: #e74c3c; /* Texto em vermelho */
+    font-size: 2.5em;
+    font-weight: bold;
+    text-align: center;
+    justify-content: center; /* Centraliza o texto verticalmente */
+    animation: fadeInOut 5s forwards; /* Animação de fade in/out */
+    z-index: 1000; /* Garante que fique acima de tudo */
+}
+
+.post-victory-text {
+    opacity: 0; /* Começa invisível para animação de fade */
+    animation: textFadeIn 2s forwards; /* Animação para o texto aparecer */
+    text-shadow: 0 0 15px rgba(231, 76, 60, 0.7);
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes textFadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+
+/* MEDIA QUERIES PARA RESPONSIVIDADE */
+@media (max-width: 600px) and (orientation: portrait) {
+    body {
+        font-size: 15px;
+    }
+
+    .screen h1 {
+        font-size: 2.2em;
+    }
+    .screen h2 {
+        font-size: 1.8em;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 1em;
+        margin: 6px;
+    }
+
+    #player-ui {
+        padding: 8px 15px;
+    }
+    #player-info {
+        gap: 5px;
+    }
+    #player-info span {
+        font-size: 1em;
+    }
+    .hp-bar-container {
+        width: 120px;
+        height: 18px;
+    }
+    .hp-text {
+        font-size: 0.8em;
+    }
+    #enemy-area {
+        margin-top: 10vh;
+        padding-bottom: 5vh; /* Menos padding para acomodar o HUD inferior */
+    }
+    #enemy {
+        font-size: 80px;
+    }
+    #boss-indicator {
+        font-size: 2em;
+        margin-bottom: 5px;
+    }
+
+    #card-hand {
+        gap: 10px;
+        padding: 8px;
+    }
+    .card {
+        width: 90px;
+        min-height: 75px;
+        padding: 8px;
+    }
+    .card .card-name {
+        font-size: 13px;
+    }
+    .card .mana-cost-display {
+        font-size: 11px;
+    }
+
+    .game-message {
+        font-size: 18px;
+        padding: 15px;
+    }
+
+    .scroll-area {
+        max-height: 55vh;
+        width: 95%;
+        padding: 10px;
+        gap: 10px;
+    }
+    .scroll-area .card {
+        width: 100px;
+        min-height: 85px;
+    }
+    .scroll-area .card button {
+        font-size: 0.8em;
+        padding: 4px 8px;
+    }
+
+    #story-screen h2 {
+        font-size: 2em;
+        margin-top: 30px;
+    }
+    .story-content-box {
+        font-size: 1em;
+        line-height: 1.6;
+        height: 60vh;
+    }
+    .story-text-line {
+        margin: 3px 0;
+    }
+
+    .custom-confirm-content {
+        padding: 20px;
+        font-size: 1.1em;
+    }
+    .custom-confirm-buttons button {
+        font-size: 1em;
+        padding: 8px 20px;
+        margin: 0 5px;
+    }
+
+    #certificates-container {
+        gap: 8px;
+        margin-top: 20px;
+        width: 95%;
+    }
+    .certificate-slot {
+        width: 50px;
+        height: 50px;
+    }
+
+    #victory-screen h1 {
+        font-size: 2.8em;
+    }
+    #victory-screen p {
+        font-size: 1.1em;
+    }
+    #victory-certificate-display {
+        width: 80px;
+        height: 80px;
+    }
+
+    .post-victory-overlay {
+        font-size: 1.8em;
+    }
+}
+
+@media (min-width: 601px) {
+    #enemy-area {
+        margin-top: 10vh; /* Ajusta a posição do inimigo para telas maiores */
+        padding-bottom: 5vh; /* Garante espaço para a HUD inferior */
+    }
+}
+

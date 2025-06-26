@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-key="game_title_browser">Emotion RPG</title>
+  <!-- Link para o arquivo CSS de estilos -->
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Importa as novas fontes personalizadas para o jogo */
+    @font-face {
+      font-family: 'PixelifySans';
+      src: url('fontes/PixelifySans-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'PixelifySans';
+      src: url('fontes/PixelifySans-Bold.ttf') format('truetype');
+      font-weight: bold; /* Define este peso como bold para a família PixelifySans */
+      font-style: normal;
+    }
+  </style>
+  
+  <!-- Configuração para PWA (Progressive Web App) -->
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <!-- NOVO: Container principal que envolverá todas as telas do jogo -->
+  <div id="app-container">
+    <!-- Tela do Menu Principal -->
+    <div id="main-menu" class="screen">
+      <h1 data-key="main_title">Emotion RPG</h1>
+      <!-- Botões do menu principal, AGORA COM IDs para JS -->
+      <button id="btn-play" data-key="btn_play">▶️ Jogar</button>
+      <button id="btn-shop" data-key="btn_shop">🛒 Loja</button>
+      <button id="btn-cards" data-key="btn_cards">🎴 Cartas</button>
+      <button id="btn-options" data-key="btn_options">⚙️ Opções</button>
+      <!-- Slots de Certificados no Menu Principal (AGORA COMO IMAGENS) -->
+      <div id="certificates-container">
+        <img class="certificate-slot empty-slot" id="certificate-slot-0" src="images/certificates/empty_certificate.png" alt="Certificado 1">
+        <img class="certificate-slot empty-slot" id="certificate-slot-1" src="images/certificates/empty_certificate.png" alt="Certificado 2">
+        <img class="certificate-slot empty-slot" id="certificate-slot-2" src="images/certificates/empty_certificate.png" alt="Certificado 3">
+        <img class="certificate-slot empty-slot" id="certificate-slot-3" src="images/certificates/empty_certificate.png" alt="Certificado 4">
+        <img class="certificate-slot empty-slot" id="certificate-slot-4" src="images/certificates/empty_certificate.png" alt="Certificado 5">
+      </div>
+      <!-- NOVO BOTÃO DE HISTÓRIA -->
+      <button id="btn-story" data-key="btn_story" class="story-button-main-menu">📖 História do Jogo</button>
+      <!-- Exibição de cubos no HUD (Heads-Up Display) do menu principal -->
+      <div class="hud-cubes"><span data-key="cubes_label">🟨 Cubos:</span> <span id="main-cubes">0</span></div>
+      <!-- Créditos no canto inferior esquerdo -->
+      <div id="credits" class="credits-text">
+        <span data-key="credits_label">Criador do jogo:</span><br>
+        <span data-key="creator_name">Renato Santos</span>
+      </div>
+    </div>
+
+    <!-- Tela da Loja -->
+    <div id="shop-menu" class="screen"> 
+      <!-- Botão para voltar ao menu principal a partir da loja -->
+      <button id="btn-shop-back" class="btn-back" data-key="btn_back">🔙</button>
+      <h2 data-key="shop_title">🛒 Loja</h2>
+      <!-- Exibição de cubos no HUD da loja -->
+      <div class="hud-cubes"><span data-key="cubes_label">🟨 Cubos:</span> <span id="shop-cubes">0</span></div>
+      <!-- Área de rolagem para exibir os itens da loja -->
+      <div class="scroll-area" id="shop-items"></div>
+    </div>
+
+    <!-- Tela do Deck de Cartas -->
+    <div id="deck-menu" class="screen"> 
+      <!-- Botão para voltar ao menu principal a partir do deck -->
+      <button id="btn-deck-back" class="btn-back" data-key="btn_back">🔙</button>
+      <h2 data-key="deck_title">🎴 Cartas Disponíveis</h2>
+      <!-- Área de rolagem para exibir as cartas disponíveis para o deck -->
+      <div class="scroll-area" id="deck-cards"></div>
+      <!-- NOVO: Contador de cartas no deck -->
+      <p id="deck-card-count">Cartas no Deck: 0/3</p> <!-- Ajustado para 3 MAX_DECK_SIZE -->
+      <!-- NOVO: Elemento para exibir avisos de deck incompatível -->
+      <p id="deck-warning-message" class="deck-warning-message hidden-element"></p>
+    </div>
+
+    <!-- Tela do Jogo -->
+    <div id="game-screen" class="screen"> 
+      <!-- Cenário de fundo em ASCII Art -->
+      <pre id="ascii-background" class="ascii-background-style">
+~~~~       ~~~~~~~        ~~~~        ~~~~
+            ~~~~     _________     ~~~~     ________     ~~~~
+               /\    /  /\    \     /\     /      \     /\    
+       /\     /  \  /  /  \    \   /  \   /   /\   \   /  \   
+      /  \   /    \/  /    \    \_/    \_/   /  \   \_/    \  
+     /    \_/      \_/      \            \__/    \    \     \ 
+  __/         _         _       _          _     _     _     \__
+     \      / \       / \     / \        / \   / \   / \       /
+      \____/   \_____/   \___/   \______/   \_/   \_/   \_____/
+------------------------------------------------------------------
+          ||       |||     ||||     |||     |||      |||     |||
+         ||||     |||||   |||||    |||||   ||||    |||||   |||||
+        |||||    ||||||  |||||||  ||||||| |||||   ||||||  |||||||
+     |||||||||  ||||||||||||||||||||||||||||||| |||||||||||||||||
+------------------------------------------------------------------
+     .    .     .     .   .     .     .     .   .     .    .    .   
+   .    .    '   .       .     '   .     .   .    .     .     .    .
+     .   .    .     .   .   .     .   .    .     .     .    .    .
+      </pre>
+      <!-- Botão para voltar ao menu principal a partir do jogo -->
+      <button id="btn-game-back" class="btn-back" data-key="btn_back">🔙</button>
+      <!-- Área do Inimigo -->
+      <div id="enemy-area">
+        <!-- NOVO: Elemento para exibir o texto "Boss" -->
+        <div id="boss-indicator" class="boss-indicator hidden-element" data-key="boss_label">BOSS</div> 
+        <div id="enemy">👾</div> <!-- Ícone do inimigo -->
+        <!-- Barra de vida do inimigo -->
+        <div id="enemy-health-bar"><div id="enemy-health"></div></div>
+        <!-- Elemento para exibir o nome do inimigo (será oculto via CSS) -->
+        <div id="enemy-name-display">Nome do Inimigo</div> 
+      </div>
+      <!-- Interface do Jogador -->
+      <div id="player-ui">
+        <!-- Informações do jogador (vida, cubos, onda, mana) -->
+        <div id="player-info">
+          <div class="player-stats-left">
+              <span data-key="player_health_label">❤️ Vida:</span> <span id="player-health">100</span> <br>
+              <span data-key="player_mana_label">💠 Mana:</span> <span id="player-mana">100</span>
+          </div>
+          <div class="player-stats-right">
+              <span data-key="wave_label">🌊 Onda:</span> <span id="wave-count">1</span> <br>
+              <span data-key="cubes_label">🟨 Cubos:</span> <span id="player-cubes">0</span>
+          </div>
+        </div>
+        <!-- Área onde as cartas da mão serão exibidas -->
+        <div id="card-hand"></div>
+      </div>
+      <!-- NOVO: Mensagem customizada do jogo -->
+      <div id="game-message" class="game-message hidden-element"></div>
+    </div>
+
+    <!-- Nova Tela de Opções -->
+    <div id="options-menu" class="screen">
+      <button id="btn-options-back" class="btn-back" data-key="btn_back">🔙</button>
+      <h2 data-key="options_title">⚙️ Opções</h2>
+      <div class="options-group">
+        <label for="music-volume-slider" data-key="music_volume_label">Volume da Música:</label>
+        <input type="range" id="music-volume-slider" min="0" max="1" step="0.05" value="0.5" oninput="updateVolume()">
+      </div>
+      <div class="options-group">
+        <label for="sfx-volume-slider" data-key="sfx_volume_label">Volume dos Efeitos Sonoros:</label>
+        <input type="range" id="sfx-volume-slider" min="0" max="1" step="0.05" value="0.8" oninput="updateVolume()">
+      </div>
+      <div class="options-group">
+          <h3 data-key="language_label">Idioma:</h3>
+          <button id="lang-pt-btn" onclick="setLanguage('pt')" data-key="lang_pt">🇧🇷 Português</button>
+          <button id="lang-en-btn" onclick="setLanguage('en')" data-key="lang_en">🇬🇧 English</button>
+          <button id="lang-es-btn" onclick="setLanguage('es')" data-key="lang_es">🇪🇸 Español</button>
+      </div>
+    </div>
+
+    <!-- Nova Tela de Vitória -->
+    <div id="victory-screen" class="screen">
+      <h1 id="victory-title-main" data-key="victory_title">🏆 Vitória!</h1> <!-- Adicionado ID para manipulação fácil -->
+      <p id="victory-stats-damage"><strong data-key="total_damage_dealt_label">Dano Total Causado:</strong> <span id="victory-total-damage">0</span></p> <!-- Adicionado ID -->
+      <p id="victory-stats-cards"><strong data-key="cards_used_label">Cartas Usadas:</strong> <span id="victory-cards-used">Nenhuma</span></p> <!-- Adicionado ID -->
+      <!-- NOVO: Elemento para exibir o certificado ganho -->
+      <img id="victory-certificate-display" class="certificate-slot empty-slot" src="images/certificates/empty_certificate.png" alt="Certificado de Vitória">
+      <button id="btn-victory-back" data-key="btn_back_to_main_menu">🔙 Voltar ao Menu Principal</button>
+    </div>
+
+    <!-- NOVA TELA DE HISTÓRIA / SEQUÊNCIA PÓS-VITÓRIA -->
+    <!-- Reutilizaremos esta tela ou criaremos uma nova para as mensagens pós-vitória -->
+    <div id="story-screen" class="screen">
+      <button id="btn-story-back" class="btn-back" data-key="btn_back">🔙</button>
+      <h2 data-key="story_title">📖 História do Jogo</h2>
+      <div class="scroll-area story-content-box" id="story-content-box">
+          <!-- O texto da história será inserido aqui dinamicamente -->
+      </div>
+    </div>
+
+    <!-- NOVO: Diálogo de Confirmação Customizado (substitui o `confirm()` do navegador) -->
+    <div id="custom-confirm-dialog" class="custom-confirm-dialog hidden-element">
+      <div class="custom-confirm-content">
+        <p id="custom-confirm-message" data-key="story_confirm_title">⚠️ Deseja continuar?</p>
+        <div class="custom-confirm-buttons">
+          <button id="custom-confirm-yes" data-key="story_confirm_yes">Sim</button>
+          <button id="custom-confirm-no" data-key="story_confirm_no">Não</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOVO: Overlay para as mensagens da sequência pós-vitória -->
+    <div id="post-victory-message-overlay" class="screen hidden-element post-victory-overlay">
+      <p id="post-victory-text" class="post-victory-text"></p>
+    </div>
+
+  </div> <!-- Fim do #app-container -->
+
+  <!-- Link para o arquivo JavaScript principal do jogo -->
+  <script src="game.js"></script>
+
+  <!-- Script para registrar o Service Worker (para PWA e offline) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registrado com sucesso:', registration.scope);
+          })
+          .catch(error => {
+            console.log('Falha no registro do Service Worker:', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
+
