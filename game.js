@@ -2179,9 +2179,9 @@ window.onload = () => {
     console.log("Página carregada. Inicializando jogo.");
 
     // Inicializa as músicas de fundo
-    backgroundMusic = new Audio("sounds/battletheme1.wav");
+    backgroundMusic = new Audio("battletheme1.wav");
     backgroundMusic.loop = true;
-    bossMusic = new Audio("sounds/BossTheme1.mp3");
+    bossMusic = new Audio("BossTheme1.mp3");
     bossMusic.loop = true;
     sfx.victoryTheme.loop = false; // Garante que a música de vitória não toque em loop
 
