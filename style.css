@@ -3,13 +3,13 @@
 /* Importa a fonte personalizada para o jogo */
 @font-face {
   font-family: 'PixelifySans';
-  src: url('fontes/PixelifySans-Regular.ttf') format('truetype');
+  src: url('PixelifySans-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'PixelifySans';
-  src: url('fontes/PixelifySans-Bold.ttf') format('truetype');
+  src: url('PixelifySans-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
