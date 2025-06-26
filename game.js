@@ -2179,7 +2179,7 @@ window.onload = () => {
     console.log("Página carregada. Inicializando jogo.");
 
     // Inicializa as músicas de fundo
-    backgroundMusic = new Audio("battletheme1.wav");
+    backgroundMusic = new Audio("BattleTheme1.wav");
     backgroundMusic.loop = true;
     bossMusic = new Audio("BossTheme1.mp3");
     bossMusic.loop = true;
