@@ -89,6 +89,7 @@ let defense;          // Defesa do jogador
 let enemyHealth;      // Vida atual do inimigo
 let deck = [];        // Cartas que o jogador tem no deck para usar no jogo
 const MAX_DECK_SIZE = 3; // CORRIGIDO: Limite de 3 cartas no deck
+let bossSpecialAttackChance = 0.2; // 20% chance do boss usar o especial
 
 // Objetos para rastrear status do jogador e inimigo
 let playerStatus = {
